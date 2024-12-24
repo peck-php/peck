@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Peck\Services\Spellcheckers;
 
+use Peck\Config;
 use Peck\Contracts\Services\Spellchecker;
 use Peck\ValueObjects\Misspelling;
 use PhpSpellcheck\MisspellingInterface;
@@ -37,11 +38,22 @@ final readonly class InMemorySpellchecker implements Spellchecker
      */
     public function check(string $text): array
     {
-        $misspellings = $this->aspell->check($text);
+        $misspellings = $this->filterWhitelistedWords(iterator_to_array($this->aspell->check($text)));
 
         return array_map(fn (MisspellingInterface $misspelling): Misspelling => new Misspelling(
             $misspelling->getWord(),
             array_slice($misspelling->getSuggestions(), 0, 4),
-        ), iterator_to_array($misspellings));
+        ), $misspellings);
+    }
+
+    /**
+     * Filters the given words against the whitelisted words stored in the configuration.
+     *
+     * @param  array<int, \PhpSpellcheck\MisspellingInterface>  $misspellings
+     * @return array<int, \PhpSpellcheck\MisspellingInterface> $misspellings
+     */
+    public function filterWhitelistedWords(array $misspellings): array
+    {
+        return array_filter($misspellings, fn (MisspellingInterface $misspelling): bool => ! in_array($misspelling->getWord(), Config::get('whitelistedWords')));
     }
 }

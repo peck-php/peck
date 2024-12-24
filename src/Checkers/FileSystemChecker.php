@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Peck\Checkers;
 
+use Peck\Config;
 use Peck\Contracts\Checker;
 use Peck\Contracts\Services\Spellchecker;
 use Peck\ValueObjects\Issue;
@@ -33,6 +34,7 @@ readonly class FileSystemChecker implements Checker
     public function check(array $parameters): array
     {
         $filesOrDirectories = Finder::create()
+            ->notPath(Config::get('whitelistedDirectories'))
             ->ignoreDotFiles(true)
             ->ignoreVCS(true)
             ->ignoreUnreadableDirs()

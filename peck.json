@@ -1,0 +1,6 @@
+{
+    "whitelistedWords": [
+        "config"
+    ],
+    "whitelistedDirectories": []
+}

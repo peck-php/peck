@@ -17,4 +17,12 @@ interface Spellchecker
      * @return array<int, Misspelling>
      */
     public function check(string $text): array;
+
+    /**
+     * Filters the given words against the whitelisted words stored in the configuration.
+     *
+     * @param  array<int, \PhpSpellcheck\MisspellingInterface>  $misspellings
+     * @return array<int, \PhpSpellcheck\MisspellingInterface> $misspellings
+     */
+    public function filterWhitelistedWords(array $misspellings): array;
 }
